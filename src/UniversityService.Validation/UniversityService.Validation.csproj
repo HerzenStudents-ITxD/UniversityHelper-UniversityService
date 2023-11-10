@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="$(ProjectDir)..\..\Common.Configurations.targets" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\UniversityService.Broker\UniversityService.Broker.csproj" />
+    <ProjectReference Include="..\UniversityService.Data\UniversityService.Data.csproj" />
+    <ProjectReference Include="..\UniversityService.Models.Dto\UniversityService.Models.Dto.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="$(ProjectDir)..\..\Common.Configurations.targets" />
+
+  <ItemGroup>
+    <Compile Remove="Commands\LocationPhoto\**" />
+    <Compile Remove="Commands\LocationUnityObjectName\**" />
+    <Compile Remove="Commands\LocationUnityPositionRelation\**" />
+    <Compile Remove="Commands\LocationUnityPosition\**" />
+    <EmbeddedResource Remove="Commands\LocationPhoto\**" />
+    <EmbeddedResource Remove="Commands\LocationUnityObjectName\**" />
+    <EmbeddedResource Remove="Commands\LocationUnityPositionRelation\**" />
+    <EmbeddedResource Remove="Commands\LocationUnityPosition\**" />
+    <None Remove="Commands\LocationPhoto\**" />
+    <None Remove="Commands\LocationUnityObjectName\**" />
+    <None Remove="Commands\LocationUnityPositionRelation\**" />
+    <None Remove="Commands\LocationUnityPosition\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\UniversityService.Data\UniversityService.Data.csproj" />
+    <ProjectReference Include="..\UniversityService.Models.Dto\UniversityService.Models.Dto.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Commands\UniversityAddition\Interfaces\" />
+    <Folder Include="Commands\University\Interfaces\" />
+  </ItemGroup>
+
+</Project>
