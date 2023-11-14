@@ -12,39 +12,30 @@ namespace UniversityHelper.UniversityService.Models.Db
     public Guid Id { get; set; }
     public Guid UniversityId { get; set; }
     public Guid UserId { get; set; }
-    public double? Rate { get; set; }
-    public DateTime StartWorkingAt { get; set; }
-    public DateTime? EndWorkingAt { get; set; }
-    public DateTime? Probation { get; set; }
     public bool IsActive { get; set; }
     public Guid CreatedBy { get; set; }
 
-    public DbCompany Company { get; set; }
-    public DbContractSubject ContractSubject { get; set; }
+    public DbUniversity University { get; set; }
   }
 
-  public class DbCompanyUserConfiguration : IEntityTypeConfiguration<DbCompanyUser>
+  public class DbUniversityUserConfiguration : IEntityTypeConfiguration<DbUniversityUser>
   {
-    public void Configure(EntityTypeBuilder<DbCompanyUser> builder)
+    public void Configure(EntityTypeBuilder<DbUniversityUser> builder)
     {
       builder
         .ToTable(
-          DbCompanyUser.TableName,
+          DbUniversityUser.TableName,
           cu => cu.IsTemporal(b =>
           {
-            b.UseHistoryTable(DbCompanyUser.HistoryTableName);
+            b.UseHistoryTable(DbUniversityUser.HistoryTableName);
           }));
 
       builder
         .HasKey(t => t.Id);
 
       builder
-        .HasOne(u => u.Company)
+        .HasOne(u => u.University)
         .WithMany(c => c.Users);
-
-      builder
-        .HasOne(u => u.ContractSubject)
-        .WithMany(cs => cs.Users);
     }
   }
 }

@@ -6,10 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace UniversityHelper.UniversityService.Data.Provider
 {
-    [AutoInject(InjectType.Scoped)]
-    public interface IDataProvider : IBaseDataProvider
-    {
-        public DbSet<DbUniversity> Universities { get; set; }
-        public DbSet<DbUniversityAddition> UniversityAdditions { get; set; }
-    }
+  [AutoInject(InjectType.Scoped)]
+  public interface IDataProvider : IBaseDataProvider
+  {
+    public DbSet<DbUniversity> Universities { get; set; }
+    public DbSet<DbUniversityAddition> UniversityAdditions { get; set; }
+  }
 }

@@ -60,193 +60,193 @@ using UniversityHelper.UniversityService.Data.Provider.MsSql.Ef;
 
 namespace UniversityHelper.UniversityService
 {
-    public class Startup : BaseApiInfo
+  public class Startup : BaseApiInfo
+  {
+    public const string CorsPolicyName = "LtDoCorsPolicy";
+    private string redisConnStr;
+
+    private readonly BaseServiceInfoConfig _serviceInfoConfig;
+    private readonly RabbitMqConfig _rabbitMqConfig;
+
+    public IConfiguration Configuration { get; }
+
+    public Startup(IConfiguration configuration)
     {
-        public const string CorsPolicyName = "LtDoCorsPolicy";
-        private string redisConnStr;
+      Configuration = configuration;
 
-        private readonly BaseServiceInfoConfig _serviceInfoConfig;
-        private readonly RabbitMqConfig _rabbitMqConfig;
+      _serviceInfoConfig = Configuration
+        .GetSection(BaseServiceInfoConfig.SectionName)
+        .Get<BaseServiceInfoConfig>();
 
-        public IConfiguration Configuration { get; }
+      _rabbitMqConfig = Configuration
+        .GetSection(BaseRabbitMqConfig.SectionName)
+        .Get<RabbitMqConfig>();
 
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
+      Version = "2.0.2.0";
+      Description = "UniversityService is an API that intended to work with notes.";
+      StartTime = DateTime.UtcNow;
+      ApiName = $"UniversityHelper - {_serviceInfoConfig.Name}";
+    }
 
-            _serviceInfoConfig = Configuration
-              .GetSection(BaseServiceInfoConfig.SectionName)
-              .Get<BaseServiceInfoConfig>();
+    private static NewtonsoftJsonPatchInputFormatter GetJsonPatchInputFormatter()
+    {
+      var builder = new ServiceCollection()
+        .AddLogging()
+        .AddMvc()
+        .AddNewtonsoftJson()
+        .Services.BuildServiceProvider();
 
-            _rabbitMqConfig = Configuration
-              .GetSection(BaseRabbitMqConfig.SectionName)
-              .Get<RabbitMqConfig>();
+      return builder
+        .GetRequiredService<IOptions<MvcOptions>>()
+        .Value
+        .InputFormatters
+        .OfType<NewtonsoftJsonPatchInputFormatter>()
+        .First();
+    }
 
-            Version = "2.0.2.0";
-            Description = "UniversityService is an API that intended to work with notes.";
-            StartTime = DateTime.UtcNow;
-            ApiName = $"UniversityHelper - {_serviceInfoConfig.Name}";
-        }
-
-        private static NewtonsoftJsonPatchInputFormatter GetJsonPatchInputFormatter()
-        {
-            var builder = new ServiceCollection()
-              .AddLogging()
-              .AddMvc()
-              .AddNewtonsoftJson()
-              .Services.BuildServiceProvider();
-
-            return builder
-              .GetRequiredService<IOptions<MvcOptions>>()
-              .Value
-              .InputFormatters
-              .OfType<NewtonsoftJsonPatchInputFormatter>()
-              .First();
-        }
-
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddCors(options =>
-            {
-                options.AddPolicy(
-                  CorsPolicyName,
-                  builder =>
-                  {
-                      builder
-                .AllowAnyOrigin()
-                .AllowAnyHeader()
-                .AllowAnyMethod();
-                  });
-            });
-
-            services.AddHttpContextAccessor();
-
-            string dbConnStr = ConnectionStringHandler.Get(Configuration);
-
-            services.AddDbContext<UniversityServiceDbContext>(options =>
-            {
-                options.UseSqlServer(dbConnStr);
-            });
-
-            services.AddHealthChecks()
-              .AddRabbitMqCheck()
-              .AddSqlServer(dbConnStr);
-
-            if (int.TryParse(Environment.GetEnvironmentVariable("MemoryCacheLiveInMinutes"), out int memoryCacheLifetime))
-            {
-                services.Configure<MemoryCacheConfig>(options =>
+    public void ConfigureServices(IServiceCollection services)
+    {
+      services.AddCors(options =>
+      {
+        options.AddPolicy(
+                CorsPolicyName,
+                builder =>
                 {
-                    options.CacheLiveInMinutes = memoryCacheLifetime;
-                });
-            }
-            else
-            {
-                services.Configure<MemoryCacheConfig>(Configuration.GetSection(MemoryCacheConfig.SectionName));
-            }
-
-            if (int.TryParse(Environment.GetEnvironmentVariable("RedisCacheLiveInMinutes"), out int redisCacheLifeTime))
-            {
-                services.Configure<RedisConfig>(options =>
-                {
-                    options.CacheLiveInMinutes = redisCacheLifeTime;
-                });
-            }
-            else
-            {
-                services.Configure<RedisConfig>(Configuration.GetSection(RedisConfig.SectionName));
-            }
-
-            services.Configure<TokenConfiguration>(Configuration.GetSection("CheckTokenMiddleware"));
-            services.Configure<BaseServiceInfoConfig>(Configuration.GetSection(BaseServiceInfoConfig.SectionName));
-            services.Configure<BaseRabbitMqConfig>(Configuration.GetSection(BaseRabbitMqConfig.SectionName));
-            services.Configure<ForwardedHeadersOptions>(options =>
-            {
-                options.ForwardedHeaders =
-                  ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+              builder
+              .AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
             });
+      });
 
-            services.AddBusinessObjects();
+      services.AddHttpContextAccessor();
 
-            services.AddControllers();
+      string dbConnStr = ConnectionStringHandler.Get(Configuration);
 
-            services.ConfigureMassTransit(_rabbitMqConfig);
+      services.AddDbContext<UniversityServiceDbContext>(options =>
+      {
+        options.UseSqlServer(dbConnStr);
+      });
 
-            services.AddMemoryCache();
+      services.AddHealthChecks()
+        .AddRabbitMqCheck()
+        .AddSqlServer(dbConnStr);
 
-            //TODO this will be used when all validation takes place on the pipeline
-            //string path = Path.Combine(
-            //    Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-            //    "LT.DigitalOffice.UserService.Validation.dll");
-            //services.AddScoped<IValidator<JsonPatchDocument<EditUserRequest>>, IEditUserRequestValidator>();
-
-            redisConnStr = services.AddRedisSingleton(Configuration);
-
-            services
-              .AddControllers(options =>
-              {
-                  options.InputFormatters.Insert(0, GetJsonPatchInputFormatter());
-              }) // TODO check enum serialization from request without .AddJsonOptions()
-                 //this will be used when all validation takes place on the pipeline
-                 //.AddFluentValidation(x => x.RegisterValidatorsFromAssembly(Assembly.LoadFrom(path)))
-                 //.AddFluentValidation()
-              .AddJsonOptions(options =>
-              {
-                  options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-              })
-              .AddNewtonsoftJson();
-
-            services.AddSwaggerGen(options =>
-            {
-                options.SwaggerDoc($"{Version}", new OpenApiInfo
-                {
-                    Version = Version,
-                    Title = _serviceInfoConfig.Name,
-                    Description = Description
-                });
-
-                options.EnableAnnotations();
-            });
-        }
-
-        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
+      if (int.TryParse(Environment.GetEnvironmentVariable("MemoryCacheLiveInMinutes"), out int memoryCacheLifetime))
+      {
+        services.Configure<MemoryCacheConfig>(options =>
         {
-            app.UpdateDatabase<UniversityServiceDbContext>();
+          options.CacheLiveInMinutes = memoryCacheLifetime;
+        });
+      }
+      else
+      {
+        services.Configure<MemoryCacheConfig>(Configuration.GetSection(MemoryCacheConfig.SectionName));
+      }
 
-            FlushRedisDbHelper.FlushDatabase(redisConnStr, Cache.Users);
+      if (int.TryParse(Environment.GetEnvironmentVariable("RedisCacheLiveInMinutes"), out int redisCacheLifeTime))
+      {
+        services.Configure<RedisConfig>(options =>
+        {
+          options.CacheLiveInMinutes = redisCacheLifeTime;
+        });
+      }
+      else
+      {
+        services.Configure<RedisConfig>(Configuration.GetSection(RedisConfig.SectionName));
+      }
 
-            app.UseForwardedHeaders();
+      services.Configure<TokenConfiguration>(Configuration.GetSection("CheckTokenMiddleware"));
+      services.Configure<BaseServiceInfoConfig>(Configuration.GetSection(BaseServiceInfoConfig.SectionName));
+      services.Configure<BaseRabbitMqConfig>(Configuration.GetSection(BaseRabbitMqConfig.SectionName));
+      services.Configure<ForwardedHeadersOptions>(options =>
+      {
+        options.ForwardedHeaders =
+                ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+      });
 
-            app.UseExceptionsHandler(loggerFactory);
+      services.AddBusinessObjects();
 
-            app.UseApiInformation();
+      services.AddControllers();
 
-            app.UseRouting();
+      services.ConfigureMassTransit(_rabbitMqConfig);
 
-            app.UseMiddleware<TokenMiddleware>();
+      services.AddMemoryCache();
 
-            app.UseCors(CorsPolicyName);
+      //TODO this will be used when all validation takes place on the pipeline
+      //string path = Path.Combine(
+      //    Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+      //    "LT.DigitalOffice.UserService.Validation.dll");
+      //services.AddScoped<IValidator<JsonPatchDocument<EditUserRequest>>, IEditUserRequestValidator>();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers().RequireCors(CorsPolicyName);
-                endpoints.MapHealthChecks($"/{_serviceInfoConfig.Id}/hc", new HealthCheckOptions
-                {
-                    ResultStatusCodes = new Dictionary<HealthStatus, int>
-          {
+      redisConnStr = services.AddRedisSingleton(Configuration);
+
+      services
+        .AddControllers(options =>
+        {
+          options.InputFormatters.Insert(0, GetJsonPatchInputFormatter());
+        }) // TODO check enum serialization from request without .AddJsonOptions()
+           //this will be used when all validation takes place on the pipeline
+           //.AddFluentValidation(x => x.RegisterValidatorsFromAssembly(Assembly.LoadFrom(path)))
+           //.AddFluentValidation()
+        .AddJsonOptions(options =>
+        {
+          options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        })
+        .AddNewtonsoftJson();
+
+      services.AddSwaggerGen(options =>
+      {
+        options.SwaggerDoc($"{Version}", new OpenApiInfo
+        {
+          Version = Version,
+          Title = _serviceInfoConfig.Name,
+          Description = Description
+        });
+
+        options.EnableAnnotations();
+      });
+    }
+
+    public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
+    {
+      app.UpdateDatabase<UniversityServiceDbContext>();
+
+      FlushRedisDbHelper.FlushDatabase(redisConnStr, Cache.Users);
+
+      app.UseForwardedHeaders();
+
+      app.UseExceptionsHandler(loggerFactory);
+
+      app.UseApiInformation();
+
+      app.UseRouting();
+
+      app.UseMiddleware<TokenMiddleware>();
+
+      app.UseCors(CorsPolicyName);
+
+      app.UseEndpoints(endpoints =>
+      {
+        endpoints.MapControllers().RequireCors(CorsPolicyName);
+        endpoints.MapHealthChecks($"/{_serviceInfoConfig.Id}/hc", new HealthCheckOptions
+        {
+          ResultStatusCodes = new Dictionary<HealthStatus, int>
+    {
             { HealthStatus.Unhealthy, 200 },
             { HealthStatus.Healthy, 200 },
             { HealthStatus.Degraded, 200 },
-          },
-                    Predicate = check => check.Name != "masstransit-bus",
-                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-                });
-            });
+    },
+          Predicate = check => check.Name != "masstransit-bus",
+          ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+        });
+      });
 
-            app.UseSwagger()
-              .UseSwaggerUI(options =>
-              {
-                  options.SwaggerEndpoint($"/swagger/{Version}/swagger.json", $"{Version}");
-              });
-        }
+      app.UseSwagger()
+        .UseSwaggerUI(options =>
+        {
+          options.SwaggerEndpoint($"/swagger/{Version}/swagger.json", $"{Version}");
+        });
     }
+  }
 }
