@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace HerzenHelper.UniversityService.Business.Helpers
+namespace UniversityHelper.UniversityService.Business.Helpers
 {
     public class CSVReader
     {

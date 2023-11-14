@@ -1,11 +1,11 @@
-﻿using HerzenHelper.UniversityService;
+﻿using UniversityHelper.UniversityService;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using System;
 
-namespace HerzenHelper.UniversityService
+namespace UniversityHelper.UniversityService
 {
     public class Program
     {

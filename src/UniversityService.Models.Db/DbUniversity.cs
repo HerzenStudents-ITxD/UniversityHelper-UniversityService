@@ -6,25 +6,31 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HerzenHelper.UniversityService.Models.Db
+namespace UniversityHelper.UniversityService.Models.Db
 {
     public class DbUniversity
     {
         public const string TableName = "Universities";
 
         public Guid Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string Tagline { get; set; }
+        public string Contacts { get; set; }
         public int CreatedBy { get; set; }
         public DateTime CreatedAtUtc { get; set; }
         public bool IsActive { get; set; }
         public bool InDevelop { get; set; }
 
         public ICollection<DbUniversityAddition> Additions { get; set; }
+        public ICollection<DbUniversityUser> Users { get; set; }
 
         public DbUniversitySettings Settings { get; set; }
 
         public DbUniversity()
         {
             Additions = new HashSet<DbUniversityAddition>();
+            Users = new HashSet<DbUniversityUser>();
         }
     }
 

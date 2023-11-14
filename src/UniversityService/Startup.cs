@@ -43,20 +43,20 @@ using UniversityHelper.UniversityService.Validation.User.Interfaces;
 using Microsoft.OpenApi.Models;
 using UniversityHelper.Models.Broker.Responses.Search;
 using System.Reflection;
-using HerzenHelper.Core.BrokerSupport.Configurations;
-using HerzenHelper.Core.BrokerSupport.Extensions;
-using HerzenHelper.Core.BrokerSupport.Middlewares.Token;
-using HerzenHelper.Core.Configurations;
-using HerzenHelper.Core.EFSupport.Extensions;
-using HerzenHelper.Core.EFSupport.Helpers;
-using HerzenHelper.Core.Extensions;
-using HerzenHelper.Core.Middlewares.ApiInformation;
-using HerzenHelper.Core.RedisSupport.Configurations;
-using HerzenHelper.Core.RedisSupport.Constants;
-using HerzenHelper.Core.RedisSupport.Extensions;
-using HerzenHelper.Core.RedisSupport.Helpers;
-using HerzenHelper.UniversityService.Models.Dto.Configurations;
-using HerzenHelper.UniversityService.Data.Provider.MsSql.Ef;
+using UniversityHelper.Core.BrokerSupport.Configurations;
+using UniversityHelper.Core.BrokerSupport.Extensions;
+using UniversityHelper.Core.BrokerSupport.Middlewares.Token;
+using UniversityHelper.Core.Configurations;
+using UniversityHelper.Core.EFSupport.Extensions;
+using UniversityHelper.Core.EFSupport.Helpers;
+using UniversityHelper.Core.Extensions;
+using UniversityHelper.Core.Middlewares.ApiInformation;
+using UniversityHelper.Core.RedisSupport.Configurations;
+using UniversityHelper.Core.RedisSupport.Constants;
+using UniversityHelper.Core.RedisSupport.Extensions;
+using UniversityHelper.Core.RedisSupport.Helpers;
+using UniversityHelper.UniversityService.Models.Dto.Configurations;
+using UniversityHelper.UniversityService.Data.Provider.MsSql.Ef;
 
 namespace UniversityHelper.UniversityService
 {
@@ -210,7 +210,7 @@ namespace UniversityHelper.UniversityService
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
-            app.UpdateDatabaseUniversityServiceDbContext > ();
+            app.UpdateDatabase<UniversityServiceDbContext>();
 
             FlushRedisDbHelper.FlushDatabase(redisConnStr, Cache.Users);
 

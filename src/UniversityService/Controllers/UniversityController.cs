@@ -1,11 +1,11 @@
-﻿using HerzenHelper.Core.Responses;
-using HerzenHelper.UniversityService.Business.Commands.Right.Interfaces;
-using HerzenHelper.UniversityService.Models.Dto.Models;
-using HerzenHelper.UniversityService.Models.Dto.Requests;
-using HerzenHelper.UniversityService.Models.Dto.Requests.Filters;
+﻿using UniversityHelper.Core.Responses;
+using UniversityHelper.UniversityService.Business.Commands.Right.Interfaces;
+using UniversityHelper.UniversityService.Models.Dto.Models;
+using UniversityHelper.UniversityService.Models.Dto.Requests;
+using UniversityHelper.UniversityService.Models.Dto.Requests.Filters;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HerzenHelper.UniversityService.Controllers
+namespace UniversityHelper.UniversityService.Controllers
 {
     [ApiController]
     [Route("[controller]")]

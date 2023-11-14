@@ -7,7 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace HerzenHelper.UniversityService.Business.Helpers.HerzenUniversity
+namespace UniversityHelper.UniversityService.Business.Helpers.HerzenUniversity
 {
     public class TimetableParser
     {

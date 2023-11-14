@@ -1,11 +1,11 @@
 ﻿using System.Reflection;
 using System.Threading.Tasks;
-using HerzenHelper.UniversityService.Data.Provider;
-using HerzenHelper.UniversityService.Models.Db;
-using HerzenHelper.Core.EFSupport.Provider;
+using UniversityHelper.UniversityService.Data.Provider;
+using UniversityHelper.UniversityService.Models.Db;
+using UniversityHelper.Core.EFSupport.Provider;
 using Microsoft.EntityFrameworkCore;
 
-namespace HerzenHelper.UniversityService.Data.Provider.MsSql.Ef
+namespace UniversityHelper.UniversityService.Data.Provider.MsSql.Ef
 {
     public class UniversityServiceDbContext : DbContext, IDataProvider
     {
@@ -18,7 +18,7 @@ namespace HerzenHelper.UniversityService.Data.Provider.MsSql.Ef
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.Load("HerzenHelper.UniversityService.Models.Db"));
+            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.Load("UniversityHelper.UniversityService.Models.Db"));
         }
 
         public object MakeEntityDetached(object obj)

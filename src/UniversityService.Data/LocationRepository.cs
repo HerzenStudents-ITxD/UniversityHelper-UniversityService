@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using HerzenHelper.Core.Extensions;
-using HerzenHelper.UniversityService.Data.Interfaces;
-using HerzenHelper.UniversityService.Data.Provider;
-using HerzenHelper.UniversityService.Models.Db;
-using HerzenHelper.UniversityService.Models.Dto.Requests.Filters;
+using UniversityHelper.Core.Extensions;
+using UniversityHelper.UniversityService.Data.Interfaces;
+using UniversityHelper.UniversityService.Data.Provider;
+using UniversityHelper.UniversityService.Models.Db;
+using UniversityHelper.UniversityService.Models.Dto.Requests.Filters;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
-namespace HerzenHelper.UniversityService.Data
+namespace UniversityHelper.UniversityService.Data
 {
     public class UniversityRepository : IUniversityRepository
     {

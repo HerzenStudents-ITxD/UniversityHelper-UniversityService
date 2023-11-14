@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HerzenHelper.UniversityService.Models.Db
+namespace UniversityHelper.UniversityService.Models.Db
 {
     public class DbUniversitySettings
     {
